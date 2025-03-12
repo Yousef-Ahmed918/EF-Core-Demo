@@ -224,7 +224,7 @@ namespace EF_Core_Demo
                 //}
                 #endregion
 
-                #region Join - Join() , GroupJoin()
+                #region Join - Join() , GroupJoin() , left outer join , cross join
                 //join is better with the query syntax than fluent syntax
                 #region Join
                 //var result = from d in companyDBContext.Departments
@@ -259,40 +259,142 @@ namespace EF_Core_Demo
                 #endregion
 
                 #region GroupJoin
-                var result = companyDBContext.Departments
-                    .GroupJoin(companyDBContext.Employees
-                    , d => d.DepartmentId
-                    , e => e.DepartmentId
-                    , (department, employees) => new
-                    {
-                        department, 
-                        employees
-                    });
+                //var result = companyDBContext.Departments
+                //    .GroupJoin(companyDBContext.Employees
+                //    , d => d.DepartmentId
+                //    , e => e.DepartmentId
+                //    , (department, employees) => new
+                //    {
+                //        department, 
+                //        employees
+                //    });
 
 
 
-                result = from d in companyDBContext.Departments
-                         join e in companyDBContext.Employees
-                       on d.DepartmentId equals e.DepartmentId
-                       into employees
-                         select new
-                         {
-                             department = d,
-                             employees = employees
-                         };
-                       
-                foreach (var d in result)
-                {
-                    Console.WriteLine($"Department:{d.department.DepartmentId}, {d.department.Name}");
-                    foreach(var e in d.employees)
-                    {
-                        Console.WriteLine($"Employee:{e.Id} , {e.Name}" );
-                    }
-                }
-                       
+                //result = from d in companyDBContext.Departments
+                //         join e in companyDBContext.Employees
+                //       on d.DepartmentId equals e.DepartmentId
+                //       into employees
+                //         select new
+                //         {
+                //             department = d,
+                //             employees = employees
+                //         };
+
+                //foreach (var d in result)
+                //{
+                //    Console.WriteLine($"Department:{d.department.DepartmentId}, {d.department.Name}");
+                //    foreach(var e in d.employees)
+                //    {
+                //        Console.WriteLine($"Employee:{e.Id} , {e.Name}" );
+                //    }
+                //}
+
                 #endregion
-                
-                
+
+                #region Left / Right Outer Join
+                //Group join is considered left outer join 
+
+                //var result = companyDBContext.Departments
+                //    .GroupJoin(companyDBContext.Employees
+                //    , d => d.DepartmentId
+                //    , e => e.DepartmentId
+                //    , (department, employees) => new
+                //    {
+                //        department,
+                //        employees
+                //    });
+
+                //foreach (var d in result)
+                //{
+                //    Console.WriteLine($"Department:{d.department.DepartmentId}, {d.department.Name}");
+                //    foreach (var e in d.employees)
+                //    {
+                //        Console.WriteLine($"Employee:{e.Id} , {e.Name}");
+                //    }
+                //}
+
+
+                //Select Many
+                //var result = companyDBContext.Departments
+                //    .GroupJoin(companyDBContext.Employees
+                //    , d => d.DepartmentId
+                //    , e => e.DepartmentId
+                //    , (department, employees) => new
+                //    {
+                //        department,
+                //        employees=employees.DefaultIfEmpty() //to display department even if there is no employees on the department
+                //    }).SelectMany(gColl=> gColl.employees, (gColl, emp) => new //here gColl works on emplyees 
+                //    {
+                //        emp, 
+                //        d=gColl.department
+                //    });
+
+
+                //result = from d in companyDBContext.Departments
+                //         join e in companyDBContext.Employees
+                //         on d.DepartmentId equals e.DepartmentId
+                //         into employees
+                //         from emp in employees.DefaultIfEmpty()
+                //         select new
+                //         {
+                //            emp,
+                //            d
+                //         };
+
+                //foreach (var d in result)
+                //{
+                //    Console.WriteLine($"{d.d.Name} : {d.emp?.Name??"No Emp"}");
+
+                //}
+
+                #endregion
+
+
+                #region Cross join
+                //to make dummy data for testing 
+                //var crossJoinResult = from d in companyDBContext.Departments
+                //                      from e in companyDBContext.Employees
+                //                      select new
+                //                      {
+                //                          e,
+                //                          d
+                //                      };
+
+                //var crossJoinResult02 = companyDBContext.Departments.SelectMany(
+                //     department => companyDBContext.Employees.Select(emp => new
+                //     {
+                //         emp,
+                //         department
+                //     }));
+
+                //foreach (var result in crossJoinResult02)
+                //{
+                //    Console.WriteLine($"{result.emp.Name}  {result.department.Name}");
+                //}
+
+                #endregion
+                #endregion
+
+
+                #region Mapping Views
+                //To create View
+                //Make a empty migration and add the sql code in it 
+                //and create a class for the view 
+                //in the companyDbcontext on model creating add 
+                //modelBuilder.Entity<Class Name>().ToView("View Name").HasNoKey();
+                //now call the view normally
+                //var result = companyDBContext.EmployeesDepartmentsView;
+
+                //foreach (var re in result)
+                //{
+                //    Console.WriteLine($"{re.DepartmentId} - {re.DepartmentName} - {re?.EmployeeId??0} - {re?.EmployeeName??"No Name"}");
+                //}
+                #endregion
+
+
+                #region DB First
+
                 #endregion
 
             }

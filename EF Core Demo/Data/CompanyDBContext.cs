@@ -43,11 +43,13 @@ namespace EF_Core_Demo.Data
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            modelBuilder.Entity<EmployeesDepartments>().ToView("EmployeeDepartmentView").HasNoKey();
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<EmployeesDepartments> EmployeesDepartmentsView { get; set; }
         //public DbSet<Product> Products { get; set; }
         //public DbSet<Project> Projects { get; set; }
     }
